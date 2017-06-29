@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>加载海量点</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+    <style type="text/css">
+        html,body{
+            margin:0;
+            width:100%;
+            height:100%;
+            padding: 0;
+            background:#ffffff;
+            font-family: 微软雅黑;
+        }
+        #map{
+            width:100%;
+            height:100%;
+            position: absolute;
+            z-index: 1;
+        }
+        #panel {
+            position: absolute;
+            top:30px;
+            left:10px;
+            z-index: 999;
+            color: #fff;
+        }
+        #login{
+            position:absolute;
+            width:300px;
+            height:40px;
+            left:50%;
+            top:50%;
+            margin:-40px 0 0 -150px;
+        }
+        #login input[type=password]{
+            width:200px;
+            height:30px;
+            padding:3px;
+            line-height:30px;
+            border:1px solid #000;
+        }
+        #login input[type=submit]{
+            width:80px;
+            height:38px;
+            display:inline-block;
+            line-height:38px;
+        }
+    </style>
+    <style>
+        @media screen and (max-width: 1366px) {
+            .cxBtn{
+                padding-right: 1%;
+            }
+            .cxJgList{
+                height: 62%;
+
+            }
+        }
+        @media screen and (max-width: 1920px) and (min-width: 1600px){
+            .cxBtn{
+                padding-right: 5%;
+            }
+            .cxJgList{
+                height: 100%;
+
+            }
+        }
+        #boxBiaoZhu{
+            position: absolute;
+            bottom:2%;
+            right: 1%;
+            width: 158px;
+            height: 168px;
+            background: rgba(0,0,0,.5);
+            z-index: 2;
+        }
+        #boxBiaoZhu .BiaoZhuInside{
+            width: 152px;
+            height: 162px;
+            margin: 2px auto;
+            border: 1px solid white;
+            color: white;
+
+        }
+        #boxBiaoZhu .BiaoZhuInside p{
+            color: white;
+            padding: 7px 20px 7px 15px;
+            margin: 0;
+        }
+        #boxBiaoZhu .BiaoZhuInside span:nth-of-type(1){
+            float: left;
+        }
+        #boxBiaoZhu .BiaoZhuInside span:nth-of-type(2){
+            float: right;
+        }
+        .BiaoZhuInside div{
+            padding: 3px 10px;
+        }
+        .BiaoZhuInside div:nth-of-type(1){
+            margin-top: -5px;
+        }
+        .BiaoZhuInside div span{
+            display: block;width: 20px;height: 20px;
+        }
+        .anchorBL
+        {
+            display: none;
+        }
+        #zheZhaoCeng{
+            position: absolute;
+            z-index: 9999;
+            width: 100%;
+            height: 100%;
+            background: #081734;
+        }
+        #boxChaXun{
+            z-index: 2;
+            position: absolute;
+            width: 25%;
+            height: 90%;
+            background: url(img/cxbgContent.png) ;
+            background-size: contain;
+            top: 2%;
+            left: 1%;
+            max-width: 450px;
+            max-height: 807px;
+            min-width: 400px;
+            /*min-height: 581px;*/
+            overflow: hidden;
+            border-radius: 5px;
+        }
+        #chaXun{
+            width: 95%;
+            height: 96.5%;
+            background: #262626;
+            margin: 0 auto;
+            /*opacity: .3;*/
+        }
+        #boxCXtitle{
+            width: 100%;
+            height: 25%;
+            min-height: 195px;
+            /*background: red;*/
+        }
+        #boxCXresult{
+            width: 100%;
+            height: 70%;
+            min-height: 368px;
+            /*background: orchid;*/
+        }
+        .cxTitle{
+            width: 100%;
+            height: 42px;
+            background: url("img/cxTitle.png") no-repeat;
+            font-weight: 900;
+        }
+        .cxResult{
+            width: 100%;
+            height: 52px;
+            background: url("img/cxAnwser.png") no-repeat;
+            border-radius: 8px 8px 0 0;
+            font-weight: 900;
+        }
+        .cxTitle div{
+            padding: 0 10px;
+            height: 35px;
+            line-height: 35px;
+            color: #67BCFD;
+        }
+        .cxResult div{
+            padding: 0 10px;
+            height: 52px;
+            line-height: 45px;
+            color: #67BCFD;
+        }
+        .cxTitle div img{
+            vertical-align: -10%;
+            /*vertical-align: middle;*/
+        }
+        .cxResult div img{
+            vertical-align: -10%;
+        }
+        .cxList,.cxJgList{
+            color: white;
+        }
+        .yiKuaiSpan{
+            padding: 0 0 0 7px;
+            width: 48%;
+            height: 40px;
+            line-height: 40px;
+            float: left;
+            overflow: hidden;
+            font-size: .8rem;
+            /*background: red;*/
+        }
+        .yiKuaiSpan input,.yiKuaiSpan select{
+            width: 51%;
+        }
+        .cxBtn{
+            float: right;
+        }
+        .cxJgList{
+            overflow: auto;
+            /*display: none;*/
+            margin: 30px 0;
+        }
+        #backToMin{
+            height: 23px;;
+            width: 96%;
+            background: url("img/cxreallyButton.png") no-repeat;
+            border-radius:8px 8px 0 0;
+            position: absolute;
+            bottom: 1%;
+            right: 8px;
+            background-size: contain;
+        }
+        #backToMin img{
+            margin-left: 47%;
+            cursor: pointer;
+        }
+        .cxListTitle{
+            text-align: center;
+            border-bottom: solid #6EA0F1 1px;
+            overflow: auto;
+            width: 90%;
+            position: absolute;
+            top: 255px;
+            left: 18px;
+        }
+        ::-webkit-scrollbar
+        {
+            width: 10px;
+            /*height: 16px;  */
+            background-color: #ccc;
+            border-radius: 10px;
+
+        }
+        ::-webkit-scrollbar-thumb
+        {
+            border-radius: 10px;
+            -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
+            background-color: #555;
+        }
+        .cxListBody{
+            text-align: center;
+            border-bottom: dashed #39475C 1px;
+            overflow: auto;
+            width: 95%;
+            margin: 0 auto;
+        }
+        .cxListBody img{
+            vertical-align: top;
+        }
+        .cxListTitle span{
+            font-size: .8rem;
+            display: block;
+            float: left;
+            padding: .4rem 0;
+        }
+        .width_34{
+            width: 34%;
+        }
+        .width_12{
+            width: 12%;
+        }
+        .width_14{
+            width: 14%;
+        }
+        .cxListBody span{
+            font-size: .8rem;
+            display: block;
+            float: left;
+            line-height: 30px;
+        }
+        .cxListBody span:nth-of-type(1){
+            width: 34%;
+        }
+        .cxListBody span:nth-of-type(2),.cxListBody span:nth-of-type(5),.cxListBody span:nth-of-type(6){
+            width: 12%;
+        }
+        .cxListBody span:nth-of-type(3),.cxListBody span:nth-of-type(4){
+            width: 14%;
+        }
+    </style>
+    <!--<script src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>-->
+    <script src="http://libs.baidu.com/jquery/1.10.2/jquery.min.js">
+    </script>
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=6G188kAN6mGApve3nM1lrLm3VSCuCEDa"></script>
+    <!--<script type="text/javascript" src="http://developer.baidu.com/map/jsdemo/data/points-sample-data.js"></script>-->
+    <script type="text/javascript" src="../gpsData.js"></script>
+</head>
+<body style="overflow-y: hidden">
+<!--<div id="zheZhaoCeng" style=""></div>&lt;!&ndash;掩饰延时层&ndash;&gt;-->
+<div id="boxChaXun"><!--左上角盒子-->
+    <div id="cxTop" style="background:url('img/cxbgTop.png');width: 100%;height: 2%;max-height: 12px"></div>
+    <div id="cxButton" style="background:url('img/cxbgButton.png');width: 100%;height: 2%;max-height: 14px;position: absolute;bottom:0;"></div>
+    <div id="chaXun">
+        <div id="boxCXtitle">
+            <div class="cxTitle">
+                <div><img src="img/放大镜.png" alt=""/>&nbsp;查询条件</div>
+            </div>
+            <div class="cxList">
+                <div class="yiKuaiSpan">
+                    <span>线路&nbsp;区间 ：</span>
+                    <input type="text"/>
+                </div>
+                <div class="yiKuaiSpan">
+                    <span>行&ensp;&ensp;&ensp;&ensp;&ensp;&nbsp;别 ：</span>
+                    <!--<input type="text" />-->
+                    <select id="direction" name="direction" >
+                        <option value="0">全部</option>
+                        <option value="上行">上行</option>
+                        <option value="下行">下行</option>
+                    </select>
+                </div>
+                <div class="yiKuaiSpan">
+                    <span>公里标(m)：</span>
+                    <input  id="startkm" type="text" style="width: 19%"/>&nbsp;至
+                    <input  id="endkm" type="text" style="width: 20%"/>
+                </div>
+                <div class="yiKuaiSpan">
+                    <span>杆&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号 ：</span>
+                    <input id="txtpole" type="text"/>
+                </div>
+                <div class="yiKuaiSpan">
+                    <span>组织&nbsp;机构 ：</span>
+                    <input type="text"/>
+                </div>
+                <div class="yiKuaiSpan">
+                    <span>缺陷数(个) ：</span>
+                    <input type="text" style="width: 19%"/>&nbsp;至
+                    <input type="text" style="width: 20%"/>
+                </div>
+                <div class="cxBtn">
+                    <img src="img/查询按钮.png" alt=""/>
+                </div>
+            </div>
+        </div>
+        <div id="boxCXresult">
+            <div class="cxResult">
+                <div><img src="img/搜索结果icon.png" alt=""/>&nbsp;查询结果</div>
+            </div>
+            <div class="cxJgList">
+                <div class="cxListTitle">
+                    <span class="width_34">线路区间</span>
+                    <span class="width_12">行别</span>
+                    <span class="width_14">公里标</span>
+                    <span class="width_14">杆号</span>
+                    <span class="width_12">缺陷数</span>
+                    <span class="width_12">报警数</span>
+                </div>
+                <div class="cxListBody">
+                    <span>北京</span>
+                    <span><img src="img/上行.png" alt=""/></span>
+                    <span>11</span>
+                    <span>11</span>
+                    <span>11</span>
+                    <span>11</span>
+                </div>
+                <div class="cxListBody">
+                    <span>11</span>
+                    <span><img src="img/上行.png" alt=""/></span>
+                    <span>11</span>
+                    <span>11</span>
+                    <span>11</span>
+                    <span>11</span>
+                </div>
+                <div class="cxListBody">
+                <span>11</span>
+                <span><img src="img/上行.png" alt=""/></span>
+                <span>11</span>
+                <span>11</span>
+                <span>11</span>
+                <span>11</span>
+            </div>
+                <div class="cxListBody">
+                <span>11</span>
+                <span><img src="img/上行.png" alt=""/></span>
+                <span>11</span>
+                <span>11</span>
+                <span>11</span>
+                <span>11</span>
+            </div>
+                <div class="cxListBody">
+                <span>11</span>
+                <span><img src="img/下行.png" alt=""style="position: relative; left: -3px"/></span>
+                <span>11</span>
+                <span>11</span>
+                <span>4</span>
+                <span>2</span>
+            </div>
+                <div class="cxListBody">
+                <span>11</span>
+                <span><img src="img/上行.png" alt=""/></span>
+                <span>11</span>
+                <span>11</span>
+                <span>11</span>
+                <span>11</span>
+            </div>
+                <div class="cxListBody">
+                <span>11</span>
+                <span><img src="img/上行.png" alt=""/></span>
+                <span>11</span>
+                <span>11</span>
+                <span>11</span>
+                <span>11</span>
+            </div>
+                <div class="cxListBody">
+                <span>11</span>
+                <span><img src="img/上行.png" alt=""/></span>
+                <span>11</span>
+                <span>11</span>
+                <span>11</span>
+                <span>11</span>
+            </div>
+                <div class="cxListBody">
+                <span>11</span>
+                <span><img src="img/上行.png" alt=""/></span>
+                <span>11</span>
+                <span>11</span>
+                <span>11</span>
+                <span>11</span>
+            </div>
+                <div class="cxListBody">
+                <span>11</span>
+                <span><img src="img/上行.png" alt=""/></span>
+                <span>11</span>
+                <span>11</span>
+                <span>11</span>
+                <span>11</span>
+            </div>
+                <div class="cxListBody">
+                <span>11</span>
+                <span><img src="img/上行.png" alt=""/></span>
+                <span>11</span>
+                <span>11</span>
+                <span>11</span>
+                <span>11</span>
+            </div>
+                <div class="cxListBody">
+                <span>11</span>
+                <span><img src="img/下行.png" alt="" style="position: relative; left: -3px"/></span>
+                <span>11</span>
+                <span>11</span>
+                <span>11</span>
+                <span>11</span>
+            </div>
+                <div class="cxListBody">
+                <span>11</span>
+                <span><img src="img/上行.png" alt=""/></span>
+                <span>11</span>
+                <span>11</span>
+                <span>11</span>
+                <span>11</span>
+            </div>
+            </div>
+            <div id="backToMin"><img src="img/向上收缩.png" alt=""/></div>
+        </div>
+
+        <div></div>
+    </div><!--内部框-->
+</div><!--左上角盒子-->
+<div id="map"></div><!--百度地图区-->
+<div id="boxBiaoZhu">
+    <div class="BiaoZhuInside">
+        <p><span>图例</span><span><img src="img/图例按钮.png" alt=""/></span><br/></p>
+        <hr align="left" style=" height:2px;border:none;border-top:1px solid white; width: 80%;margin-left: 5%;margin-top: -5px;"/>
+        <hr align="right" style=" height:2px;border:none;border-top:1px solid white; width: 80%;margin-right: 5%;margin-top: -5px;"/>
+        <div style="font-size: .9em"><span style="background:#6CF075;"></span>&nbsp;无缺陷</div>
+        <div style="font-size: .9em"><span style="background:#EAFF00;"></span>&nbsp;1~5个缺陷</div>
+        <div style="font-size: .9em"><span style="background:#EA8E50;"></span>&nbsp;6~10个缺陷</div>
+        <div style="font-size: .9em"><span style="background:#FF0600;"></span>&nbsp;11~20个缺陷</div>
+    </div>
+</div><!--//图例区-->
+<script type="text/javascript">
+    var map = new BMap.Map("map", {mapType:BMAP_HYBRID_MAP});                        // 创建Map实例
+    map.addControl(new BMap.MapTypeControl());   //添加地图类型控件
+    map.centerAndZoom(new BMap.Point(104.071216, 29.570997), 7);     // 初始化地图,设置中心点坐标和地图级别
+    map.enableScrollWheelZoom();                        //启用滚轮放大缩小
+    var points = [];  // 添加海量点数据
+    var colorNumber=0;//颜色初始化
+    for (var i = 0; i < data.data.length; i++) {
+        points.push(new BMap.Point(data.data[i][0], data.data[i][1]));
+        if(i>500){//判断点数量改变颜色
+            colorNumber=1;
+            if(i>5000){
+                colorNumber=2;
+            }
+        }
+    }
+    var pointColor=[
+        {
+            "Color": "#00EE00"
+        },
+        {
+            "Color": "red"
+        },
+        {
+            "Color": "blue"
+        }
+    ] // 标记点色彩集
+    var options = {
+        size: 3,
+        shape: BMAP_POINT_SHAPE_SQUARE,
+        color: pointColor[colorNumber].Color
+    }
+    var pointCollection = new BMap.PointCollection(points, options);  // 初始化PointCollection
+    pointCollection.addEventListener('click', function (e) {
+        alert('单击点的坐标为：' + e.point.lng + ',' + e.point.lat);  // 监听点击事件
+    });
+    map.addOverlay(pointCollection);  // 添加Overlay
+
+</script>
+<script>
+    $(document).ready(function () {
+        setTimeout(function () {
+            $("#zheZhaoCeng").css("zIndex", "0");
+        }, 1000);
+
+
+
+
+
+        $("#backToMin").click(function () {// 收缩函数
+//                    alert($(".cxListTitle").css("display"))
+                    if ($(".cxListTitle").css("display") == "block") {
+                        $("#boxChaXun").css({"height": "290px"});
+                        $(".cxListTitle").css({"display": "none"});
+                        $("#backToMin img").attr("src","img/向下收缩.png");
+                    } else {
+                        $("#boxChaXun").css({"height": "90%"});
+                        $(".cxListTitle").css({"display": "block"});
+                        $("#backToMin img").attr("src","img/向上收缩.png");
+                    }
+                }
+
+
+        )
+
+
+    });
+
+</script>
+</body>
+</html>

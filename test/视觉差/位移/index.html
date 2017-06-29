@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>鼠标拖动绘制矩形框(canvas)</title>
+    <style type="text/css">
+:root { --红色: red; 
+--red:blue;}
+
+p{
+	color: var(--红色);
+}
+
+  #parallax_illustration {
+    display:block;
+    width: 921px;
+    height: 375px;
+    position: relative;
+    overflow: hidden;
+    margin:200px auto;
+  }
+  #parallax_illustration #parallax_error_text {
+    position: absolute;
+    top: 72px;
+    left: 72px;
+    z-index: 10;
+  }
+  #parallax_illustration #parallax_octocat {
+    position: absolute;
+    top: 94px;
+    left: 356px;
+    z-index: 9;
+  }
+  #parallax_illustration #parallax_speeder {
+    position: absolute;
+    top: 150px;
+    left: 432px;
+    z-index: 8;
+  }
+  #parallax_illustration #parallax_octocatshadow {
+    position: absolute;
+    top: 297px;
+    left: 371px;
+    z-index: 7;
+  }
+  #parallax_illustration #parallax_speedershadow {
+    position: absolute;
+    top: 263px;
+    left: 442px;
+    z-index: 6;
+  }
+  #parallax_illustration #parallax_building_1 {
+    position: absolute;
+    top: 73px;
+    left: 457px;
+    z-index: 5;
+  }
+  #parallax_illustration #parallax_building_2 {
+    position: absolute;
+    top: 113px;
+    left: 742px;
+    z-index: 4;
+  }
+  #parallax_illustration #parallax_bg {
+    position: absolute;
+    top: -20px;
+    left: -20px;
+    z-index: 1;
+  }
+    </style>
+    <script type="text/javascript" src="jquery-1.6.2.min.js"></script>
+</head>
+<body>
+<p>1</p>
+<p>2</p>
+<p>3</p>
+
+
+
+<div id="parallax_illustration" >
+  <img src="https://cdn.shopify.com/s/files/1/0051/4802/t/80/assets/parallax_errortext.png?5581089179293172103" width="271" height="249" alt="404 | “This is not the web page you are looking for”" id="parallax_error_text" style="left: 82px; top: 73.5px;">
+  <img src="https://cdn.shopify.com/s/files/1/0051/4802/t/80/assets/parallax_octocat.png?5581089179293172103" width="188" height="230" alt="Octobi Wan Catnobi" id="parallax_octocat" style="left: 361px; top: 95.5px;">
+  <img src="https://cdn.shopify.com/s/files/1/0051/4802/t/80/assets/parallax_speeder.png?5581089179293172103" width="440" height="156" alt="land speeder" id="parallax_speeder" style="left: 437px; top: 151.5px;">
+  <img src="https://cdn.shopify.com/s/files/1/0051/4802/t/80/assets/parallax_octocatshadow.png?5581089179293172103" width="166" height="49" alt="Octobi Wan Catnobi's shadow" id="parallax_octocatshadow" style="left: 376px; top: 298.5px;">
+  <img src="https://cdn.shopify.com/s/files/1/0051/4802/t/80/assets/parallax_speedershadow.png?5581089179293172103" width="430" height="75" alt="land speeder's shadow" id="parallax_speedershadow" style="left: 447px; top: 264.5px;">
+  <img src="https://cdn.shopify.com/s/files/1/0051/4802/t/80/assets/parallax_building_1.png?5581089179293172103" width="304" height="123" alt="building" id="parallax_building_1" style="left: 432px; top: 70px;">
+  <img src="https://cdn.shopify.com/s/files/1/0051/4802/t/80/assets/parallax_building_2.png?5581089179293172103" width="116" height="50" alt="building" id="parallax_building_2" style="left: 704px; top: 108.5px;">
+  <img src="parallax_bg.jpg" width="940" height="900" alt="building" id="parallax_bg" style="left: -20px; top: -400px;">
+</div>
+
+
+
+<script type="text/javascript">
+$(function(){
+  $('#parallax_error_text').plaxify({"xRange":40,"yRange":20,"invert":true})
+  $('#parallax_octocat').plaxify({"xRange":20,"yRange":20,"invert":true})
+  $('#parallax_octocatshadow').plaxify({"xRange":40,"yRange":20,"invert":true})
+  $('#parallax_speeder').plaxify({"xRange":40,"yRange":20,"invert":true})
+  $('#parallax_speedershadow').plaxify({"xRange":20,"yRange":20,"invert":true})
+  $('#parallax_building_1').plaxify({"xRange":200,"yRange":300,"invert":false})
+  $('#parallax_building_2').plaxify({"xRange":300,"yRange":400,"invert":false})
+  $('#parallax_bg').plaxify({"xRange":0,"yRange":500,"invert":false})
+  $.plax.enable()
+})
+</script>
+    </div>
+
+
+</body>
+<script type="text/javascript">
+(function ($) {
+  var layers    = [],
+      docWidth  = $(window).width(),
+      docHeight = $(window).height()
+
+  $(window).resize(function() {
+      docWidth  = $(window).width()
+      docHeight = $(window).height()
+  })
+
+  // Public Methods
+  $.fn.plaxify = function (params){
+
+    return this.each(function () {
+
+      var layer = {"xRange":0,"yRange":0,"invert":false}
+      for (var param in params) {
+        if (layer[param] == 0) {
+          layer[param] = params[param]
+        }
+      }
+
+      // Add an object to the list of things to parallax
+      layer.obj    = $(this)
+      layer.startX = this.offsetLeft
+      layer.startY = this.offsetTop
+
+      if(layer.invert == false){
+        layer.startX -= Math.floor(layer.xRange/2)
+        layer.startY -= Math.floor(layer.yRange/2)
+      } else {
+        layer.startX += Math.floor(layer.xRange/2)
+        layer.startY += Math.floor(layer.yRange/2)
+      }
+      layers.push(layer)
+    })
+  }
+
+  function plaxifier(e) {
+    var x      = e.pageX,
+        y      = e.pageY,
+        hRatio = Math.round((x/docWidth)*100)/100,
+        vRatio = Math.round((y/docHeight)*100)/100,
+        layer, i
+    
+    for (i = layers.length; i--;) {
+      layer = layers[i]
+      if (layer.invert != true) {
+        layer.obj
+          .css('left',layer.startX + (layer.xRange*hRatio))
+          .css('top', layer.startY + (layer.yRange*vRatio))
+      } else {
+        layer.obj
+          .css('left',layer.startX - (layer.xRange*hRatio))
+          .css('top', layer.startY - (layer.yRange*vRatio))
+      }
+    }
+  }
+
+  $.plax = {
+    enable: function(){
+      $(document).bind('mousemove.plax', function (e) {
+        plaxifier(e)
+      })
+    },
+    disable: function(){
+      $(document).unbind('mousemove.plax')
+    }
+  }
+
+  if (typeof ender !== 'undefined') {
+    $.ender($.fn, true)
+  }
+
+})(function () {
+  return typeof jQuery !== 'undefined' ? jQuery : ender
+}())
+</script>
+</html>
