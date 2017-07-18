@@ -5,164 +5,198 @@
     <title>鼠标拖动绘制矩形框(canvas)</title>
 </head>
 <body>
+<audio class="music" id="myAudio" src="http://fs.web.kugou.com/fbc9d88816ab44a1cb1322741d544854/59658411/G009/M01/08/13/SQ0DAFUKNvWAc35sAE7ymz0KynY203.mp3" preload="auto">
+            <!-- <p class="myAudiohide">你的浏览器不支持<code>audio</code>标签.</p> -->
+        </audio>
+<embed id="AudioPlayer3" name="AudioPlayer3" src="http://www.kugou.com/yy/static/swf/AudioPlayer3.swf" width="100%" height="100%" allowscriptaccess="always" allownetworking="all" quality="high" pluginspage="http://www.macromedia.com/go/getflashplayer" flashvars="useNewAPI=true&amp;type=mp3&amp;playstart=playStart&amp;playcomplete=playOver&amp;playopen=playOpen&amp;JSPositioningPlay=JSPositioningPlay&amp;flashinit=flashloaded&amp;getSongData=getSongData&amp;consolefun=consolefun&amp;errorTips=errorTips" type="application/x-shockwave-flash" wmode="transparent" allowfullscreen="true">
+    <canvas id="canvas" width="600" height="300" style="border: 1px solid #000;"></canvas>
+    <canvas id="mycanvas" width="600" height="300" style="border: 1px solid red;"></canvas>
 
-<canvas id="canvas" width="600" height="300" style="border: 1px solid #000;"></canvas>
-<canvas id="mycanvas" width="600" height="300" style="border: 1px solid red;"></canvas>
+    <script src="./jquery-1.7.2.min.js"></script>
+    <script src="./jcanvas.min.js"></script>
+    <script>
+        var layer=0;
+        CanvasExt = {
+            drawRect:function(canvasId,penColor,strokeWidth){
+                var that=this;
+                that.penColor=penColor;
+                that.penWidth=strokeWidth;
 
-<script src="./jquery-1.7.2.min.js"></script>
-<script src="./jcanvas.min.js"></script>
-<script>
-    var layer=0;
-    CanvasExt = {
-        drawRect:function(canvasId,penColor,strokeWidth){
-            var that=this;
-            that.penColor=penColor;
-            that.penWidth=strokeWidth;
+                var canvas=document.getElementById(canvasId);
+//canvas 的矩形框
+var canvasRect = canvas.getBoundingClientRect();
+//矩形框的左上角坐标
+var canvasLeft=canvasRect.left;
+var canvasTop=canvasRect.top;
 
-            var canvas=document.getElementById(canvasId);
-            //canvas 的矩形框
-            var canvasRect = canvas.getBoundingClientRect();
-            //矩形框的左上角坐标
-            var canvasLeft=canvasRect.left;
-            var canvasTop=canvasRect.top;
+var layerIndex=layer;
+var layerName="layer";
+var x=0;
+var y=0;
 
-            var layerIndex=layer;
-            var layerName="layer";
-            var x=0;
-            var y=0;
+//鼠标点击按下事件，画图准备
+canvas.onmousedown=function(e){
 
-            //鼠标点击按下事件，画图准备
-            canvas.onmousedown=function(e){
-               
-                //设置画笔颜色和宽度
-                var color=that.penColor;
-                var penWidth=that.penWidth;
+//设置画笔颜色和宽度
+var color=that.penColor;
+var penWidth=that.penWidth;
 
-                layerIndex++;
-                layer++;
-                
+layerIndex++;
+layer++;
 
-                layerName+=layerIndex;
-                x = e.clientX-canvasLeft;
-                y = e.clientY-canvasTop;
 
-                $("#"+canvasId).addLayer({
-                    type: 'rectangle',
-                    strokeStyle: color,
-                    strokeWidth: penWidth,
-                    name:layerName,
-                    fromCenter: false,
-                    x: x, y: y,
-                    width: 1,
-                    height: 1
-                });
+layerName+=layerIndex;
+x = e.clientX-canvasLeft;
+y = e.clientY-canvasTop;
 
-                $("#"+canvasId).drawLayers();
-                $("#"+canvasId).saveCanvas();
+$("#"+canvasId).addLayer({
+    type: 'rectangle',
+    strokeStyle: color,
+    strokeWidth: penWidth,
+    name:layerName,
+       fromCenter: false,
+    x: x, y: y,
+    width: 1,
+    height: 1
+});
 
-                //鼠标移动事件，画图
-                canvas.onmousemove=function(e){
-                    width = e.clientX-canvasLeft-x;
-                    height = e.clientY-canvasTop-y;
+$("#"+canvasId).drawLayers();
+$("#"+canvasId).saveCanvas();
 
-                    $("#"+canvasId).removeLayer(layerName);
+//鼠标移动事件，画图
+canvas.onmousemove=function(e){
+    width = e.clientX-canvasLeft-x;
+    height = e.clientY-canvasTop-y;
 
-                    $("#"+canvasId).addLayer({
-                        type: 'rectangle',
-                        strokeStyle: color,
-                        strokeWidth: penWidth,
-                        name:layerName,
-                        fromCenter: false,
-                        x: x, y: y,
-                        width: width,
-                        height: height
-                    });
+    $("#"+canvasId).removeLayer(layerName);
 
-                    $("#"+canvasId).drawLayers();
-                }
-            };
+    $("#"+canvasId).addLayer({
+        type: 'rectangle',
+        strokeStyle: color,
+        strokeWidth: penWidth,
+        name:layerName,
+        fromCenter: false,  
+        x: x, y: y,
+        width: width,
+        height: height
+    });
 
-            canvas.onmouseup=function(e){
+    $("#"+canvasId).drawLayers();
+}
+};
 
-                var color=that.penColor;
-                var penWidth=that.penWidth;
+canvas.onmouseup=function(e){
 
-                canvas.onmousemove=null;
+    var color=that.penColor;
+    var penWidth=that.penWidth;
 
-                width = e.clientX-canvasLeft-x;
-                height = e.clientY-canvasTop-y;
+    canvas.onmousemove=null;
 
-                $("#"+canvasId).removeLayer(layerName);
+    width = e.clientX-canvasLeft-x;
+    height = e.clientY-canvasTop-y;
 
-                $("#"+canvasId).addLayer({
-                    type: 'rectangle',
-                    strokeStyle: color,
-                    strokeWidth: penWidth,
-                    name:layerName,
-                    fromCenter: false,
-                    x: x, y: y,
-                    width: width,
-                    height: height
-                });
+    $("#"+canvasId).removeLayer(layerName);
 
-                $("#"+canvasId).drawLayers();
-                $("#"+canvasId).saveCanvas();
-                a= [ x,y,(x+width),(y+height) ]
+    $("#"+canvasId).addLayer({
+        type: 'rectangle',
+        strokeStyle: color,
+        strokeWidth: penWidth,
+        name:layerName,
+        fromCenter: false,
+        x: x, y: y,
+        width: width,
+        height: height
+    });
 
-                //冒泡排序取出矩形起始结束点
-                // for(var i=0;i<4;i++){
-                //     for(var j=0;j<4-1;j++){
-                //         if(a[j] > a[j + 1]){
-                //             var b = a[j];
-                //             a[j] = a[j + 1];
-                //             a[j + 1] = b;
-                //         }
-                //     }
-                // }
-                // 获取矩形左上和右下点坐标
-                if(a[0]>a[2]){
-                    var b=a[0];
-                    a[0]=a[2];
-                    a[2]=b;
-                }
-                 if(a[1]>a[3]){
-                    var b=a[1];
-                    a[1]=a[3];
-                    a[3]=b;
-                }
+    $("#"+canvasId).drawLayers();
+    $("#"+canvasId).saveCanvas();
+    a= [ x,y,(x+width),(y+height) ]
 
-             // $("#"+canvasId).removeLayer(layerName).drawLayers();
+//冒泡排序取出矩形起始结束点
+// for(var i=0;i<4;i++){
+//     for(var j=0;j<4-1;j++){
+//         if(a[j] > a[j + 1]){
+//             var b = a[j];
+//             a[j] = a[j + 1];
+//             a[j + 1] = b;
+//         }
+//     }
+// }
+// 获取矩形左上和右下点坐标
+if(a[0]>a[2]){
+    var b=a[0];
+    a[0]=a[2];
+    a[2]=b;
+}
+if(a[1]>a[3]){
+    var b=a[1];
+    a[1]=a[3];
+    a[3]=b;
+}
 
-                
-            
-                 var $myCanvas = $('#canvas');
+// $("#"+canvasId).removeLayer(layerName).drawLayers();
 
-                // rectangle shape 
-                $myCanvas.drawRect({
-                      fillStyle: 'steelblue',
-                      strokeStyle: 'blue',
-                      strokeWidth: 1,
-                      x: a[0], y: a[1],
-                      fromCenter: false,
-                      width: a[2]-a[0],
-                      height: a[3]-a[1]
-                });
-            //请求最高温点坐标及温度
 
-            }
-        }
-    };
+
+var $myCanvas = $('#canvas');
+
+// rectangle shape 
+$myCanvas.drawRect({
+    fillStyle: 'steelblue',
+    strokeStyle: 'blue',
+    strokeWidth: 1,
+    x: a[0], y: a[1],
+    fromCenter: false,
+    width: a[2]-a[0],
+    height: a[3]-a[1]
+});
+//请求最高温点坐标及温度
+
+}
+}
+};
+for(var i=0;i<16;i++){
+    $('#mycanvas').drawRect({
+        fillStyle:'white',
+        strokeStyle:'red',
+        strokeWidth: 1,
+        fromCenter: false,
+        x: i*10, y: i*10,
+        width: $('#mycanvas').width()-i*20,
+        height: $('#mycanvas').height()-i*20
+
+    })
+
+}
 var a=[];
-    drawPen();
-    function drawPen(){
-        var color = "red";
-        var width = 1;
-       var a= CanvasExt.drawRect("canvas",color,width);
-    }
-setInterval(function(){
-     console.log(a)
-},1000)
-console.log(parseInt(0.1));
+drawPen();
+function drawPen(){
+    var color = "red";
+    var width = 1;
+    var a= CanvasExt.drawRect("canvas",color,width);
+}
+// setInterval(function(){
+//     console.log(a)
+// },1000)
+// console.log(parseInt(0.1));
+// 
+// 
+// 
+// 
+// 
+// 
+
+/*         统计string中              某个字符串  の  个数  obj.* ← 字符串名字       */
+var str='caibaojian.com';
+var arr=str.split("");
+var obj={};
+var objArr=[];
+for(var i=0,j;j=arr[i];i++){
+if(!obj[j])obj[j]=0;
+objArr[++obj[j]]=j;
+}
+console.log(obj.i);
+
 
 </script>
 </body>
